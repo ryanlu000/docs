@@ -37,21 +37,23 @@ Make a `POST` call to `/developer/v1/accounting/connection` with `settings.vendo
 First, retrieve your connection ID:
 
 ```bash
-GET /developer/v1/accounting/connection
+curl --request GET \
+  --url https://demo-api.ramp.com/developer/v1/accounting/connection \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN'
 ```
 
 Then update the connection:
 
 ```bash
-PATCH /developer/v1/accounting/connection/{connection_id}
-```
-
-```json
-{
-  "settings": {
-    "vendor_credits_enabled": true
-  }
-}
+curl --request PATCH \
+  --url https://demo-api.ramp.com/developer/v1/accounting/connection/{connection_id} \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "settings": {
+      "vendor_credits_enabled": true
+    }
+  }'
 ```
 
 ## List Vendor Credits

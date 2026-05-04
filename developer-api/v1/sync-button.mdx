@@ -42,32 +42,36 @@ Both flows use the same pattern:
 
 ## Enable for New Connections
 
-```json
-POST /developer/v1/accounting/connection
-
-{
-  "remote_provider_name": "Your ERP",
-  "settings": {
-    "transaction_sync_button_enabled": true,
-    "reimbursement_sync_button_enabled": true
-  }
-}
+```bash
+curl --request POST \
+  --url https://demo-api.ramp.com/developer/v1/accounting/connection \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "remote_provider_name": "Your ERP",
+    "settings": {
+      "transaction_sync_button_enabled": true,
+      "reimbursement_sync_button_enabled": true
+    }
+  }'
 ```
 
 ## Enable for Existing Connections
 
 ```bash
 # Get connection ID
-GET /developer/v1/accounting/connection
+curl --request GET \
+  --url https://demo-api.ramp.com/developer/v1/accounting/connection \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN'
 
 # Update settings
-PATCH /developer/v1/accounting/connection/{connection_id}
-```
-
-```json
-{
-  "settings": {
-    "transaction_sync_button_enabled": true
-  }
-}
+curl --request PATCH \
+  --url https://demo-api.ramp.com/developer/v1/accounting/connection/{connection_id} \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "settings": {
+      "transaction_sync_button_enabled": true
+    }
+  }'
 ```

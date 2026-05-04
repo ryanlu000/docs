@@ -36,10 +36,11 @@ For more details on authorization, see the [Authorization Guide](/developer-api/
 With your credentials, request an access token. Ramp authenticates the `/developer/v1/token` request with HTTP Basic Auth: base64-encode `client_id:client_secret` and send it in the `Authorization` header.
 
 ```bash
-curl -X POST https://{environment-url}/developer/v1/token \
-  -H "Authorization: Basic {base64(client_id:client_secret)}" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=client_credentials&scope=transactions:read"
+curl --request POST \
+  --url https://{environment-url}/developer/v1/token \
+  --header 'Authorization: Basic {base64(client_id:client_secret)}' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data 'grant_type=client_credentials&scope=transactions:read'
 ```
 
 Replace `{environment-url}` with:
@@ -73,8 +74,9 @@ Copy the `access_token` — you'll use it to make API calls. Tokens expire after
 With your access token, call the Ramp API to retrieve your transactions using the `GET /transactions` endpoint.
 
 ```bash
-curl -X GET https://{environment-url}/developer/v1/transactions \
-  -H "Authorization: Bearer {YOUR_TOKEN_HERE}"
+curl --request GET \
+  --url https://{environment-url}/developer/v1/transactions \
+  --header 'Authorization: Bearer {YOUR_TOKEN_HERE}'
 ```
 
 That's it — you've made your first Ramp API call.

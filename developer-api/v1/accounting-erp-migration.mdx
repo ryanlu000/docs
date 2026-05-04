@@ -15,12 +15,14 @@ Your app must have scopes `accounting:read` and `accounting:write`.
   <Step title="Create an Inactive Connection">
     Make a `POST` to create a new, inactive accounting connection:
 
-    ```json
-    {
-      "remote_provider_name": "New ERP System",
-      "is_active": false
-    }
-    ```
+```json
+POST /developer/v1/accounting/connection
+
+{
+  "remote_provider_name": "New ERP System",
+  "is_active": false
+}
+```
 
     Save the returned `id` for subsequent calls. Status should be `UNLINKED`.
   </Step>

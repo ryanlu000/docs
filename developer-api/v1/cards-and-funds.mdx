@@ -37,15 +37,17 @@ Ramp's Developer API gives you programmatic control over funds, cards, and spend
 ### 1. Create a Spend Program Template
 
 ```bash
-curl -X POST https://api.ramp.com/developer/v1/spend-programs \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
+curl --request POST \
+  --url https://demo-api.ramp.com/developer/v1/spend-programs \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --data '{
     "display_name": "Team Offsites",
     "description": "Template for quarterly team offsites",
     "permitted_spend_types": {
       "categories": [19, 6, 4]
-    }
+    },
+    "icon": "CardTravel"
   }'
 ```
 
@@ -54,24 +56,30 @@ This creates a template that allows spending on meals (category 19), lodging (ca
 ### 2. Create a Fund from the Template
 
 ```bash
-curl -X POST https://api.ramp.com/developer/v1/limits \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "display_name": "Q1 Engineering Offsite",
+curl --request POST \
+  --url https://demo-api.ramp.com/developer/v1/limits \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "display_name": "Q1 Engineering Team Offsite",
     "spend_program_id": "$SPEND_PROGRAM_ID",
     "user_id": "$USER_ID",
     "idempotency_key": "unique-key-123"
   }'
 ```
 
+<Note>
+  **Before running these commands:** Replace the placeholder values (`$SPEND_PROGRAM_ID`, `$USER_ID`, etc.) with actual IDs from your Ramp account. The placeholders are formatted for bash compatibility — you can set them as environment variables or replace them directly in the commands.
+</Note>
+
 ### 3. Add Team Members
 
 ```bash
-curl -X POST https://api.ramp.com/developer/v1/limits/$LIMIT_ID/add-users \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
+curl --request POST \
+  --url https://demo-api.ramp.com/developer/v1/limits/$LIMIT_ID/users \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN' \
+  --header 'Content-Type: application/json' \
+  --data '{
     "user_ids": ["$USER_ID_2", "$USER_ID_3"]
   }'
 ```
@@ -79,8 +87,20 @@ curl -X POST https://api.ramp.com/developer/v1/limits/$LIMIT_ID/add-users \
 ### 4. Monitor Spending
 
 ```bash
-curl -X GET "https://api.ramp.com/developer/v1/transactions?spend_limit_id=$LIMIT_ID" \
-  -H "Authorization: Bearer $TOKEN"
+# Check current fund balance and spending
+curl --request GET \
+  --url https://demo-api.ramp.com/developer/v1/limits/$LIMIT_ID \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN'
+
+# Get recent transactions for this fund
+curl --request GET \
+  --url 'https://demo-api.ramp.com/developer/v1/transactions?limit_id=$LIMIT_ID' \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN'
+
+# Get reimbursements for this fund
+curl --request GET \
+  --url 'https://demo-api.ramp.com/developer/v1/reimbursements?spend_limit_id=$LIMIT_ID' \
+  --header 'Authorization: Bearer $RAMP_API_TOKEN'
 ```
 
 ## Best Practices
