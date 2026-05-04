@@ -7,9 +7,17 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#1A1A1A",
-    "light": "#E8E8E8",
-    "dark": "#1A1A1A"
+    "primary": "#1A3731",
+    "light": "#2D5A4E",
+    "dark": "#1A3731"
+  },
+  "font": {
+    "headings": {
+      "family": "Inter"
+    },
+    "body": {
+      "family": "Inter"
+    }
   },
   "navbar": {
     "links": [
