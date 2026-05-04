@@ -132,9 +132,10 @@
       {
         "tab": "API Reference",
         "icon": "square-terminal",
+        "openapi": "/openapi/developer-api.json",
         "groups": [
           {
-            "group": "API Reference",
+            "group": "Overview",
             "pages": [
               "api-reference/overview"
             ]
