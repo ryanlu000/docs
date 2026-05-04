@@ -1,0 +1,104 @@
+---
+title: "Webhooks"
+description: "Receive real-time notifications about events in your Ramp account instead of polling the API."
+---
+
+Webhooks allow your application to receive real-time notifications about events that occur in your Ramp account. Instead of polling the API, webhooks push notifications to your specified endpoint whenever an event happens.
+
+## Supported Events
+
+<Accordion title="Full Event Reference">
+
+| Resource | Scope | Event | Description |
+|---|---|---|---|
+| Applications | `applications:read` | `applications.status_updated` | Application status changed |
+| Transactions | `transactions:read` | `transactions.ready_for_review` | Transaction needs review |
+| | | `transactions.cleared` | Transaction settled (also fires for refunds) |
+| | | `transactions.authorized` | Transaction authorized |
+| | | `transactions.ready_to_sync` | Ready to sync to accounting |
+| | | `transactions.declined` | Transaction declined |
+| Bills | `bills:read` | `bills.created` | New bill created |
+| | | `bills.approved` | Bill approved for payment |
+| | | `bills.rejected` | Bill rejected |
+| | | `bills.paid` | Bill payment completed |
+| Purchase Orders | `purchase_orders:read` | `purchase_orders.created` | New PO created |
+| | | `purchase_orders.updated` | PO modified |
+| | | `purchase_orders.archived` | PO archived |
+
+</Accordion>
+
+## Getting Started
+
+<Steps>
+  <Step title="Set Up Your Endpoint">
+    Create an HTTPS endpoint that can receive POST requests. It must:
+    - Be publicly accessible
+    - Use HTTPS
+    - Return a 2xx status code
+    - Process requests within 10 seconds
+  </Step>
+  <Step title="Create a Subscription">
+    ```bash
+    POST /developer/v1/webhooks
+    ```
+
+    ```json
+    {
+      "webhook_uri": "https://your-app.com/webhooks/ramp",
+      "event_types": ["transactions.cleared", "bills.paid"]
+    }
+    ```
+  </Step>
+  <Step title="Verify the Endpoint">
+    Ramp sends a POST request with a challenge. Respond by making a verification API call with the challenge string.
+  </Step>
+</Steps>
+
+## Webhook Payload Format
+
+All webhook payloads follow this structure:
+
+```json
+{
+  "id": "evt_abc123",
+  "type": "transactions.cleared",
+  "created_at": "2024-01-15T10:30:00Z",
+  "business_id": "biz_xyz789",
+  "object": {
+    "id": "txn_def456"
+  }
+}
+```
+
+<Tip>
+  To get full resource details, use the resource ID to fetch from the appropriate API endpoint (e.g., `/transactions/{id}`).
+</Tip>
+
+## Verifying Webhook Signatures
+
+Every webhook request includes an `X-Ramp-Signature` header containing an HMAC-SHA256 hash of the raw request body, signed with your webhook secret.
+
+<Warning>
+  While payload validation is optional, we recommend implementing it for any production environment.
+</Warning>
+
+## Delivery and Retry Logic
+
+| Response Code | Behavior |
+|---|---|
+| 2xx | Delivery successful — no retries |
+| 3xx, 4xx (except 429) | Instant failure — no retries |
+| 429, 5xx (including timeouts) | Retry up to 10 times with exponential backoff |
+
+<Note>
+  The same event `id` is used for all retry attempts, allowing you to implement idempotency checks. Webhooks may arrive out of order — design your system to handle this gracefully.
+</Note>
+
+## Best Practices
+
+- Implement **idempotency checks** using the event `id`
+- Return **2xx responses within 10 seconds**
+- Process payloads **asynchronously** to respond quickly
+- **Log raw payloads** for debugging and audit trails
+- Always **verify webhook signatures** before processing
+- Use **HTTPS endpoints** to encrypt data in transit

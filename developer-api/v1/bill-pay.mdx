@@ -1,0 +1,90 @@
+---
+title: "Bill Pay"
+description: "Create, manage, and pay bills programmatically through Ramp's accounts payable API."
+---
+
+A bill is the structured accounts payable record in Ramp — the object that powers approvals, coding, and payment.
+
+## Use Cases
+
+- **ERP integration**: Sync bills and payments between Ramp and your accounting system
+- **Bill processing automation**: Programmatically create bills that are automatically approved for payment
+- **Financial reporting**: Extract bill and payment data for custom reporting and analytics
+
+## How Bills Work
+
+Payments are nested within bills and do not have their own dedicated endpoints. When you create a bill via API, you include payment details in the same request.
+
+### Bill Lifecycle
+
+```
+Draft → Pending Approval → Approved → Paid
+```
+
+<Note>
+  Bills created via API are **automatically approved** and enter the workflow at the Approved status.
+</Note>
+
+## Create a Bill
+
+Use the `POST /bills` endpoint to create a bill. The request requires several UUIDs:
+
+| Source Endpoint | Response Field | Use As |
+|---|---|---|
+| `GET /entities` | `id` | `entity_id` |
+| `GET /entities` | `bank_accounts[].id` (where `usage_type = BILL_PAY_BANK_ACCOUNT`) | `source_bank_account_id` |
+| `GET /vendors` | `id` | `vendor_id` |
+| `GET /vendors/{id}/contacts` | `id` | `vendor_contact_id` |
+| `GET /vendors/{id}/accounts` | `id` (for ACH/wire/SWIFT only) | `vendor_account_id` |
+
+<Warning>
+  If you don't see a bank account with `usage_type = BILL_PAY_BANK_ACCOUNT` in your `GET /entities` response, Bill Pay hasn't been set up for your organization yet.
+</Warning>
+
+## Payment Methods
+
+### Ramp Card Payments
+
+Paying by Ramp Card earns cashback on bill payments. Two options:
+
+- **Existing Ramp Card** — Use already-created cards for bill payments
+- **Single-Use Virtual Card** — Ramp generates a unique virtual card for each bill
+
+### Bank Transfer Payments
+
+| Method | Requirement | Timeline |
+|---|---|---|
+| ACH | Verified vendor bank account | 2–3 business days |
+| Check | Vendor address | 5–7 business days |
+| Wire | Verified vendor bank account | Same-day (domestic) |
+| SWIFT | Verified vendor bank account | Varies (international) |
+
+## Attachments
+
+Upload invoice PDFs or supporting documents using `POST /bills/{bill_id}/attachments`. This endpoint accepts `multipart/form-data`.
+
+## Three-Way Matching
+
+To verify a bill matches its purchase order and item receipt:
+
+<Steps>
+  <Step title="Get the Bill">
+    Extract `purchase_order_ids`, `line_items[].purchase_order_line_item_id`, and `inventory_line_items[].purchase_order_line_item_id`.
+  </Step>
+  <Step title="Get the Purchase Order">
+    Extract `item_receipt_ids`.
+  </Step>
+  <Step title="Get the Item Receipt">
+    Confirm `line_items[].purchase_order_line_item_id` matches the bill.
+  </Step>
+</Steps>
+
+When all three documents share the same line item IDs, you have a verified match.
+
+## Current API Limitations
+
+- You cannot trigger or manage bill approvals through the API
+- Bills created via API are automatically approved
+- Payments are nested within bills and do not have their own dedicated endpoints
+- Batch payments (creating a single payment for multiple bills) are not supported
+- OCR upload for draft bills is not currently supported via API

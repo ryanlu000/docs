@@ -1,0 +1,92 @@
+---
+title: "Ramp MCP"
+description: "Securely connect Ramp with AI assistants like ChatGPT and Claude to query data and take actions with natural language."
+---
+
+<Note>
+  Ramp MCP is subject to change. Feedback and questions can be submitted via a [Developer API support ticket](https://support.ramp.com).
+</Note>
+
+Ramp MCP allows you to securely connect Ramp with AI assistants like ChatGPT and Claude, so you can query Ramp data and take actions with natural language.
+
+## Example Use Cases
+
+- Analyze spending trends and forecasting insights
+- Check balances and request reimbursements
+- Get policy answers directly from daily tools
+- Approve bills, transactions, and reimbursements
+
+## Getting Started
+
+**Prerequisites:**
+- A Ramp production or sandbox account
+- Access to your chosen AI platform
+
+### Claude Code
+
+```bash
+claude mcp add ramp-mcp --transport streamable-http https://mcp.ramp.com/mcp
+```
+
+### Cursor
+
+Add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "ramp": {
+      "url": "https://mcp.ramp.com/mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+Add to your Claude Desktop config file:
+
+```json
+{
+  "mcpServers": {
+    "ramp": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.ramp.com/mcp"]
+    }
+  }
+}
+```
+
+<Tip>
+  **Using demo data?** Replace `https://mcp.ramp.com/mcp` with `https://demo-mcp.ramp.com/mcp` to use sample data instead of live Ramp data.
+</Tip>
+
+## Available Tools
+
+### Employee Tools
+
+Available to all Ramp users (respects individual permissions):
+
+| Tool | Description |
+|---|---|
+| `ramp_list_cards` | List all Ramp cards available to you |
+| `ramp_get_user_transactions` | Get your transaction history |
+| `ramp_get_funds` | List available funds and budgets |
+| `ramp_submit_reimbursement` | Submit a reimbursement |
+| `ramp_approve_or_reject_bill` | Approve or reject a bill |
+| `ramp_create_trip` | Create a trip in Ramp Travel |
+
+### Admin Tools
+
+Only available to users with admin or business owner permissions:
+
+| Tool | Description |
+|---|---|
+| `execute_query` | Run SQL queries on loaded data |
+| `load_spend_export` | Load transactions, reimbursements, and bills |
+| `load_users` | Load user/employee data |
+| `load_vendors` | Load vendor information |
+
+## Access Control
+
+Admins can control MCP access through **Company → Integrations → Ramp MCP** in the Ramp dashboard. Set restrictions based on roles, departments, or specific users.

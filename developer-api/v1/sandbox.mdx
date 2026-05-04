@@ -1,0 +1,53 @@
+---
+title: "Sandbox"
+description: "The Ramp sandbox is a testing environment where developers and partners can safely build, test, and experiment with Ramp's API."
+---
+
+The Ramp sandbox is a testing environment where developers and partners can safely build, test, and experiment with Ramp's API without affecting live production data.
+
+**Key features:**
+- **Safe testing environment**: Test integrations and applications before deploying to production
+- **API development**: Access Ramp's Developer API for building custom integrations
+- **No real money movement**: Demo accounts cannot process actual financial transactions
+
+## How to Get Sandbox Access
+
+- **Developers/Partners**: Submit a request through the [Ramp technology partnerships page](https://ramp.com/partnerships) to receive both sandbox and developer console access
+- **Existing customers**: Request a sales sandbox through your Account Manager
+
+## Environment URLs
+
+| Purpose | URL | Description |
+|---|---|---|
+| Ramp frontend | `https://demo.ramp.com` | Access the Ramp user interface for testing |
+| API | `https://demo-api.ramp.com` | Base URL for API calls in the Sandbox environment |
+
+## Test Demo Actions
+
+While building with the dev API, Ramp supports simulation actions within the sandbox environment. You can simulate user events through the demo actions panel. Open the demo actions panel directly within the Ramp sandbox with **⌘ J**.
+
+### Mark a Bill as Paid
+
+Navigate to **Bill Pay** via the UX, then open the bill you want to mark as paid. Press **⌘ J** to open the demo actions panel and select **"pay current bill"**.
+
+<Note>
+  This demo action depends on your Bill Pay payment release setting. When enabled, it only works for bills that are approved and scheduled. When disabled, it works for all bills.
+</Note>
+
+### Mark a Reimbursement as Paid
+
+Navigate to the **reimbursements tab** and select "needs review" to find pending reimbursements. Open the reimbursement you want to mark as paid, then press **⌘ J** and select **"Mark reimbursement as paid"**.
+
+### Create a Transaction
+
+You can do this from any page within the sandbox environment. Press **⌘ J** to open the demo actions panel and click on **"add transactions"**.
+
+## Required Permissions
+
+Each demo action requires specific permissions:
+
+| Action | Required Permission |
+|---|---|
+| Mark bill as paid | Admin or Business Owner role, or AP Clerk permission |
+| Mark reimbursement as approved | Direct manager of the submitter, Admin, or Bookkeeper role |
+| Create a transaction | Employee role or higher (Manager, Admin, or Bookkeeper) |

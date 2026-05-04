@@ -1,0 +1,81 @@
+---
+title: "Ramp Data"
+description: "Explore public datasets, benchmarks, and AI-oriented data products from Ramp."
+---
+
+<Note>
+  Ramp Data is subject to change as we expand the product area. Feedback can be submitted via a [support ticket](https://support.ramp.com).
+</Note>
+
+Ramp Data is Ramp's home for public datasets, benchmarks, and AI-oriented data products. Use Ramp Data to explore product-specific guides, query public REST APIs, and connect AI clients through Ramp Data MCP.
+
+## Datasets
+
+<CardGroup cols={2}>
+  <Card title="Ramp Rate" icon="chart-bar" href="/developer-api/v1/ramp-data/ramp-rate">
+    Software adoption and vendor benchmarks across Ramp's network
+  </Card>
+  <Card title="AI Index" icon="brain" href="/developer-api/v1/ramp-data/ai-index">
+    AI adoption rates among American businesses
+  </Card>
+</CardGroup>
+
+## Ramp Data MCP
+
+Use Ramp Data MCP when you want an AI agent to explore datasets conversationally.
+
+**Server URL:** `https://mcp.ramp.com/ramp-data/mcp`
+
+### Claude Code
+
+```bash
+claude mcp add ramp-data --transport streamable-http https://mcp.ramp.com/ramp-data/mcp
+```
+
+### Cursor
+
+Add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "ramp-data": {
+      "url": "https://mcp.ramp.com/ramp-data/mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "ramp-data": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.ramp.com/ramp-data/mcp"]
+    }
+  }
+}
+```
+
+## Available MCP Tools
+
+### Ramp Rate Tools
+
+| Tool | Description |
+|---|---|
+| `ramp_rate_list_categories` | List all software categories |
+| `ramp_rate_get_category_summary` | Get adoption stats for a category |
+| `ramp_rate_get_category_vendors` | Get ranked vendor leaderboard |
+| `ramp_rate_resolve_vendor` | Resolve a vendor name to its canonical slug |
+| `ramp_rate_get_vendor_profile` | Get a vendor's full profile |
+| `ramp_rate_compare_vendors` | Compare 2-10 vendors side by side |
+
+### AI Index Tools
+
+| Tool | Description |
+|---|---|
+| `ai_index_get_adoption` | Get AI adoption history with vendor breakdown |
+| `ai_index_get_adoption_by_sector` | AI adoption by industry sector |
+| `ai_index_get_adoption_by_size` | AI adoption by company size |

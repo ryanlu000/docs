@@ -1,0 +1,84 @@
+---
+title: "API Reference"
+description: "Complete reference for all Ramp Developer API endpoints."
+---
+
+## API Reference
+
+The Ramp Developer API provides RESTful endpoints for managing corporate spend, cards, bills, accounting integrations, and more.
+
+### Base URLs
+
+| Environment | Base URL |
+|---|---|
+| Production | `https://api.ramp.com/developer/v1` |
+| Sandbox | `https://demo-api.ramp.com/developer/v1` |
+
+### Authentication
+
+All API requests require a Bearer token in the `Authorization` header:
+
+```bash
+curl -H "Authorization: Bearer {access_token}" \
+  https://api.ramp.com/developer/v1/transactions
+```
+
+See the [Authorization Guide](/developer-api/v1/authorization) for how to obtain tokens.
+
+### API Resources
+
+<CardGroup cols={2}>
+  <Card title="Transactions" icon="receipt">
+    `GET /transactions` — List and filter card transactions
+  </Card>
+  <Card title="Bills" icon="file-invoice">
+    `GET /bills` · `POST /bills` — Manage accounts payable
+  </Card>
+  <Card title="Users" icon="users">
+    `GET /users` · `POST /users/deferred` — Manage team members
+  </Card>
+  <Card title="Limits (Funds)" icon="wallet">
+    `GET /limits` · `POST /limits` — Create and manage spending funds
+  </Card>
+  <Card title="Cards" icon="credit-card">
+    `GET /cards` · `POST /vault/cards` — Issue and manage cards
+  </Card>
+  <Card title="Vendors" icon="building">
+    `GET /vendors` · `POST /vendors` — Manage bill pay vendors
+  </Card>
+  <Card title="Accounting" icon="calculator">
+    Manage GL accounts, custom fields, and sync status
+  </Card>
+  <Card title="Webhooks" icon="bell">
+    `GET /webhooks` · `POST /webhooks` — Subscribe to events
+  </Card>
+  <Card title="Reimbursements" icon="money-bill-transfer">
+    `GET /reimbursements` — View reimbursement requests
+  </Card>
+  <Card title="Spend Programs" icon="layer-group">
+    `GET /spend-programs` · `POST /spend-programs` — Manage templates
+  </Card>
+  <Card title="Purchase Orders" icon="clipboard-list">
+    `GET /purchase-orders` · `POST /purchase-orders` — Procurement
+  </Card>
+  <Card title="Custom Records" icon="database">
+    Extend Ramp's data model with custom fields and tables
+  </Card>
+</CardGroup>
+
+### OpenAPI Specification
+
+The complete OpenAPI specification is available at:
+
+```
+https://docs.ramp.com/openapi/developer-api.json
+```
+
+### Rate Limits
+
+- **200 requests** per 10-second rolling window per IP
+- See [Rate Limiting](/developer-api/v1/rate-limiting) for details
+
+### Need Help?
+
+[Submit a Developer API support ticket](https://support.ramp.com) and our team will follow up.

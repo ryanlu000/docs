@@ -1,0 +1,121 @@
+---
+title: "User Lifecycle"
+description: "Manage Ramp users over the Developer API: onboard, update, deactivate, reactivate, and stage draft users."
+---
+
+This guide covers three workflows for managing Ramp users:
+
+1. Onboard, update, and deprovision a user
+2. Deactivate and reactivate a user
+3. Stage a draft user and schedule their invite
+
+## Prerequisites
+
+You need an OAuth access token with `users:read` and `users:write` scopes. See the [Authorization guide](/developer-api/v1/authorization).
+
+<Tip>
+  Users created outside the Developer API — via HRIS, SCIM sync, or manual invite — can still be managed through these endpoints.
+</Tip>
+
+## User Status Model
+
+| Status | Description |
+|---|---|
+| `USER_DRAFT` | Record exists, no invite sent. Can't log in or spend. |
+| `INVITE_PENDING` | Invite email sent but not yet accepted. |
+| `USER_ACTIVE` | Onboarded and can use Ramp. |
+| `USER_INACTIVE` | Deactivated. Cards frozen, spend blocked. |
+| `USER_SUSPENDED` | Suspended by Ramp for risk/policy reasons (rare). |
+
+## Scenario 1: Onboard, Update, and Deprovision
+
+### Create a User
+
+User creation is asynchronous. `POST /developer/v1/users/deferred` returns a task ID; poll the status endpoint until `SUCCESS`.
+
+```json
+{
+  "email": "jane@company.com",
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "role": "BUSINESS_USER",
+  "department_id": "dept-uuid",
+  "location_id": "loc-uuid",
+  "direct_manager_id": "manager-uuid",
+  "idempotency_key": "unique-key-789"
+}
+```
+
+<Note>
+  Only `email`, `first_name`, `last_name`, `role`, and `idempotency_key` are required. Guest users automatically get a 6-month `scheduled_deactivation_date`.
+</Note>
+
+### Update a User
+
+```bash
+PATCH /developer/v1/users/{user_id}
+```
+
+Only the fields you include are updated; everything else is left untouched.
+
+### Deactivate a User
+
+```bash
+PATCH /developer/v1/users/{user_id}/deactivate
+```
+
+Once deactivated: all cards are frozen, they can't log in, but historical data remains intact.
+
+## Scenario 2: Deactivate and Reactivate
+
+```bash
+# Deactivate
+PATCH /developer/v1/users/{user_id}/deactivate
+
+# Reactivate
+PATCH /developer/v1/users/{user_id}/reactivate
+```
+
+<Warning>
+  Do **not** call `POST /users/deferred` for a returning user. Reactivation preserves their spend history and configuration.
+</Warning>
+
+## Scenario 3: Draft Users with Scheduled Invites
+
+### Create a Draft User
+
+```json
+POST /developer/v1/users/deferred
+
+{
+  "email": "intern@company.com",
+  "first_name": "Alex",
+  "last_name": "Johnson",
+  "role": "BUSINESS_USER",
+  "is_draft": true,
+  "idempotency_key": "unique-key-draft"
+}
+```
+
+### Schedule the Invite
+
+```json
+POST /developer/v1/users/{user_id}/invite
+
+{
+  "action": "SCHEDULE",
+  "invitation_time": "2024-06-01T09:00:00-04:00"
+}
+```
+
+### Invite Actions
+
+| Action | Description |
+|---|---|
+| `SCHEDULE` | Sets or updates the scheduled invitation date |
+| `DESCHEDULE` | Clears the scheduled invitation |
+| `SEND_NOW` | Sends the invite email immediately |
+
+<Note>
+  Invite actions are only valid when the target user is `USER_DRAFT`.
+</Note>

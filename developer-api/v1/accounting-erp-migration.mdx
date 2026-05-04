@@ -1,0 +1,56 @@
+---
+title: "ERP Migration Tool"
+description: "Set up a new API-based accounting connection to seamlessly migrate from your current ERP."
+---
+
+This guide explains how integrators can set up a new API-based accounting connection to use the ERP migration tool.
+
+## Requirements
+
+Your app must have scopes `accounting:read` and `accounting:write`.
+
+## Migration Steps
+
+<Steps>
+  <Step title="Create an Inactive Connection">
+    Make a `POST` to create a new, inactive accounting connection:
+
+    ```json
+    {
+      "remote_provider_name": "New ERP System",
+      "is_active": false
+    }
+    ```
+
+    Save the returned `id` for subsequent calls. Status should be `UNLINKED`.
+  </Step>
+  <Step title="Set Up Chart of Accounts">
+    Include the `accounting_connection_id` from the previous step in each request:
+
+    - **Upload GL accounts**: `POST /developer/v1/accounting/accounts`
+    - **Create custom fields**: `POST /developer/v1/accounting/fields`
+    - **Add field options**: `POST /developer/v1/accounting/field-options`
+    - **Upload vendors**: `POST /developer/v1/accounting/vendors`
+  </Step>
+  <Step title="Mark as Ready to Migrate">
+    Call `POST /developer/v1/accounting/connection/{id}/ready-to-migrate` to mark the inactive connection as ready. This makes the new provider selectable in the customer UI.
+  </Step>
+  <Step title="Customer Completes Migration">
+    The customer navigates to **Accounting → Settings → Danger Zone → Switch Providers**, selects the new provider, and follows the on-screen steps to map fields and complete migration.
+  </Step>
+</Steps>
+
+<Warning>
+  Migrating Accounting Connections will result in a loss of historical chart of accounts codings. Ensure chart of accounts is backed up before proceeding.
+</Warning>
+
+## Pre-Migration Checklist
+
+Before migrating, ensure:
+
+1. **Sync outstanding data** — All ready-to-sync objects are marked as synced
+2. **Document rules and automations** — Export or note all accounting rules and configurations
+3. **Fetch and store the current chart of accounts** — Save GL accounts, custom fields, and vendors
+4. **Disconnect the existing connection** — Use the Accounting Connection API to unlink
+5. **Create the new connection** — Establish via API or Ramp UI
+6. **Verify and test** — Perform a small batch test to ensure the new connection works

@@ -1,0 +1,60 @@
+---
+title: "Applications"
+description: "Programmatically pre-fill Ramp applications on behalf of new businesses."
+---
+
+The Applications API lets developers programmatically pre-fill Ramp applications on behalf of new businesses. Each application creates a new business in Ramp and kicks off an asynchronous approval process.
+
+<Note>
+  This API creates and pre-fills but does **not** submit the application — the end user must submit from the Ramp UX.
+</Note>
+
+## How It Works
+
+<Steps>
+  <Step title="Submit the Application">
+    Call `POST /applications` with the applicant's information.
+  </Step>
+  <Step title="Applicant Receives Email">
+    Ramp sends the applicant an email with sign-up instructions.
+  </Step>
+  <Step title="Applicant Completes Sign-Up">
+    The applicant creates their Ramp account and may be redirected to an OAuth consent screen.
+  </Step>
+  <Step title="User Submits Application">
+    The user verifies their information and submits for Ramp review.
+  </Step>
+  <Step title="Ramp Reviews">
+    The application goes through Ramp's approval process.
+  </Step>
+  <Step title="Status Update">
+    Subscribe to webhooks to get notified of status changes.
+  </Step>
+</Steps>
+
+## Authorization
+
+Use the **Client Credentials** grant type to create a new application; the POST endpoint does not require any scopes. To read application status afterward, you'll need the `applications:read` scope via the Authorization Code flow.
+
+## Application Status Lifecycle
+
+| Status | Description |
+|---|---|
+| `STARTED` | Application created but applicant hasn't completed sign-up |
+| `IN_REVIEW` | Submitted and under review by Ramp |
+| `FOLLOW_UPS_REQUIRED` | Ramp needs additional information |
+| `APPROVED` | Approved — the business can start using Ramp |
+| `REJECTED` | Application rejected |
+| `WITHDRAWN` | Withdrawn by the applicant |
+
+## Idempotent Behavior
+
+The POST endpoint is designed to be safely retried:
+
+- If the email doesn't exist in Ramp → new business and application are created
+- If the email exists and business is still in application stage → invitation email is re-sent
+- If the business is already approved → the request is a no-op
+
+## OAuth Integration
+
+Provide `oauth_authorize_params` in your request to redirect the user to Ramp's OAuth consent screen after accepting their invite. This lets you obtain an access token for the new business.

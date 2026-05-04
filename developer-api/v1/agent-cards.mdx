@@ -1,0 +1,76 @@
+---
+title: "Agent Cards"
+description: "Let your AI agents make real purchases using Ramp with built-in spend controls and audit trails."
+---
+
+<Warning>
+  Agent Cards require approved alpha access. [Apply for access here](https://agents.ramp.com/cards). Limits, supported flows, and APIs may change as we iterate.
+</Warning>
+
+Agent Cards let your AI agents make real purchases using Ramp. When an agent needs to buy something, it generates a unique payment credential through Visa Intelligent Commerce (VIC) — scoped to the specific merchant and capped at the requested transaction amount. Every transaction shows up in your Ramp audit log attributed to the agent on behalf of the authorized user.
+
+## Prerequisites
+
+- A Ramp account with access to at least one active fund
+- The [Ramp CLI](/developer-api/v1/cli) installed and authenticated
+
+## Getting Started
+
+<Steps>
+  <Step title="Install the Ramp CLI">
+    ```bash
+    curl -fsSL https://cli.ramp.com/install.sh | sh
+    ```
+  </Step>
+  <Step title="Authenticate">
+    ```bash
+    ramp auth login
+    ```
+    This opens a browser-based OAuth flow.
+  </Step>
+  <Step title="Add the Agent Cards Skill">
+    Give your agent the skill URL so it knows how to use Agent Cards.
+  </Step>
+  <Step title="Make Your First Purchase">
+    Your agent identifies something to purchase, requests a payment credential scoped to the merchant and amount, uses the credential to complete the transaction, and the purchase appears in your Ramp audit log.
+  </Step>
+</Steps>
+
+## Session Management
+
+| Session Type | Expiry |
+|---|---|
+| Read-only | 1 week after last usage |
+| Read-write | 24 hours after last usage |
+
+As long as the agent makes at least one request within the refresh window, the session will not expire.
+
+## Current Limitations
+
+<Note>
+  We're working with Visa to reduce or remove these limitations. If any block your workflow, reach out and we'll do our best to unblock you.
+</Note>
+
+- **$5K/day issuance limit** per business (can be raised on a case-by-case basis)
+- **3DS not yet supported** via VIC — commonly required in non-U.S. markets
+- **MIT/CoF transactions not yet supported** — affects subscriptions, recurring billing, and metered billing
+
+## Restricted Merchant Categories
+
+Visa restricts payments involving certain Merchant Category Codes (MCC):
+
+| MCC | Description |
+|---|---|
+| 4816 | Computer Network / Information Services |
+| 5122 | Drugs, Drug Proprietors and Druggists Sundries |
+| 5816 | Digital Goods: Games |
+| 5912 | Drug Stores and Pharmacies |
+| 5966 | Direct Marketing – Outbound Telemarketing |
+| 5967 | Direct Marketing – Inbound Telemarketing |
+| 5968 | Direct Marketing – Continuity / Subscription |
+| 5993 | Cigar Stores and Stands |
+| 6012 | Member Financial Institution |
+| 6051 | Quasi Cash – Merchant |
+| 6211 | Securities – Brokers and Dealers |
+| 7273 | Dating Services |
+| 7995 | Betting, Lottery, Casino Gaming |

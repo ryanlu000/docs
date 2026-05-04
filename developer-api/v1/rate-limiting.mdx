@@ -1,0 +1,51 @@
+---
+title: "Rate Limiting and Timeouts"
+description: "API rate limits, timeout behavior, and best practices for syncing data efficiently."
+---
+
+## Timeouts
+
+API requests that take longer than **60 seconds** will be terminated and return a `504 Gateway Timeout` response. Most API requests complete well within this limit, but if you're working with large datasets:
+
+- Use [pagination](/developer-api/v1/pagination) to break large requests into smaller chunks
+- Implement retry logic with exponential backoff for any `504` responses
+
+## Rate Limits
+
+To ensure reliable and equitable access, Ramp enforces rate limiting per source IP address:
+
+- **Limit**: 200 requests per 10-second rolling window
+- **Reset Mechanism**: The window operates on a rolling basis
+
+When the rate limit is exceeded, the API responds with a `429 Too Many Requests` status code.
+
+<Tip>
+  **Implement Backoff Strategies**: When receiving a `429` response, implement exponential backoff (e.g., 1s, 2s, 4s) before retrying. Avoid immediate retries, as this could worsen delays.
+</Tip>
+
+## Syncing Data
+
+### Initial Seed
+
+The first time you sync a dataset, paginate through all records without any date filter. Persist the data locally rather than fetching it on every app load.
+
+### Incremental Sync
+
+After the initial seed, store a high-water mark (the timestamp of your last successful sync) and pass it to the appropriate date-filter parameter on subsequent requests.
+
+| Endpoint | Filter Parameter | Delta Sync Support |
+|---|---|---|
+| `GET /transactions` | `synced_after` | Yes — filters by sync time, catches status changes |
+| `GET /bills` | `from_created_at` | New records only — re-pulls needed for status changes |
+| `GET /purchase-orders` | `from_created_at` | Same as bills |
+
+### Recommended Polling Frequency
+
+| Period | Frequency |
+|---|---|
+| Weekdays | Every 1–4 hours |
+| Weekends | Every 12 hours |
+
+### Requesting a Higher Limit
+
+If your application requires a higher limit, [submit a Developer API support ticket](https://support.ramp.com) with your account details and usage requirements.

@@ -1,0 +1,117 @@
+---
+title: "Accounting"
+description: "Keep data in sync between Ramp and an external accounting system using the Accounting API."
+---
+
+Ramp's API can be used to keep data in sync between Ramp and an external accounting/ERP system. This guide walks through the three main steps: configuring the connection, uploading your chart of accounts, and implementing object sync.
+
+## Overview
+
+Building an accounting integration involves three main steps:
+
+<Steps>
+  <Step title="Configure Accounting Connection">
+    Establish a connection between Ramp and your ERP system.
+  </Step>
+  <Step title="Upload Chart of Accounts">
+    Import GL accounts, custom fields, field options, and vendors from your ERP into Ramp.
+  </Step>
+  <Step title="Implement Object Sync">
+    Fetch ready-to-sync objects from Ramp, transfer them to your ERP, and mark them as synced.
+  </Step>
+</Steps>
+
+## Create Accounting Connection
+
+Before syncing your chart of accounts, establish an accounting connection:
+
+```bash
+POST /developer/v1/accounting/connection
+```
+
+```json
+{
+  "remote_provider_name": "Your ERP System"
+}
+```
+
+## Chart of Accounts
+
+When integrating your ERP with Ramp, sync your chart of accounts — the list of GL accounts, vendors, and classification fields.
+
+| Component | Required | Endpoint |
+|---|---|---|
+| GL Accounts | ✅ Always | `POST /developer/v1/accounting/accounts` |
+| Custom Fields | ⚙️ Optional | `POST /developer/v1/accounting/fields` |
+| Custom Field Options | ⚙️ Optional | `POST /developer/v1/accounting/field-options` |
+| Vendors | ⚙️ Optional | `POST /developer/v1/accounting/vendors` |
+| Entities | UI only | Configured directly in Ramp |
+
+<Warning>
+  Chart of Accounts cannot be modified for Ramp accounts using a direct accounting connection. GL accounts, custom fields, and vendors become read-only via API when a direct connection is active.
+</Warning>
+
+### Batch Limits
+
+All batch operations use "all-or-nothing" processing — if any item fails validation, the entire batch is rejected:
+
+| Resource | Per-Call Limit |
+|---|---|
+| GL Accounts | 500 |
+| Accounting Vendors | 500 |
+| Custom Field Options | 500 |
+| Accounting Syncs | 5,000 successful or 5,000 failed |
+
+<Tip>
+  These limits apply **per API call**, not as total limits. You can make multiple API calls to upload more than the per-call limit.
+</Tip>
+
+## Object Sync
+
+To sync accounting data between Ramp and your ERP:
+
+<Steps>
+  <Step title="Fetch Ready-to-Sync Objects">
+    Use the appropriate endpoint with sync filters.
+  </Step>
+  <Step title="Transfer to Your ERP">
+    Process the data and create corresponding entries in your ERP system.
+  </Step>
+  <Step title="Mark as Synced">
+    Call `POST /developer/v1/accounting/syncs` to notify Ramp of sync results.
+  </Step>
+</Steps>
+
+### Sync-Ready Endpoints
+
+| Object | Endpoint |
+|---|---|
+| Bills | `GET /developer/v1/bills?sync_ready=true` |
+| Transactions | `GET /developer/v1/transactions?sync_status=SYNC_READY` |
+| Reimbursements | `GET /developer/v1/reimbursements?sync_status=SYNC_READY` |
+| Transfers | `GET /developer/v1/transfers?sync_status=SYNC_READY` |
+| Cashbacks | `GET /developer/v1/cashbacks?sync_status=SYNC_READY` |
+
+### Polling vs. Webhooks
+
+| Method | Description |
+|---|---|
+| **Polling** | Periodically fetch ready-to-sync objects. Recommended: every 1–4 hours on weekdays, every 12 hours on weekends. |
+| **Webhooks** | Receive real-time notifications. Subscribe to `transactions.ready_to_sync`, `reimbursements.ready_to_sync`, and `bills.ready_to_sync`. |
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="ERP Migration Tool" icon="arrows-rotate" href="/developer-api/v1/accounting-erp-migration">
+    Migrate between accounting connections
+  </Card>
+  <Card title="Sync Button" icon="rotate" href="/developer-api/v1/sync-button">
+    Enable UI-triggered syncs for your integration
+  </Card>
+  <Card title="Tax Codes" icon="receipt" href="/developer-api/v1/tax-codes">
+    Set up tax code accounting fields
+  </Card>
+  <Card title="Webhooks" icon="bell" href="/developer-api/v1/webhooks">
+    Real-time event notifications
+  </Card>
+</CardGroup>

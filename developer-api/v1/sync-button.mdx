@@ -1,0 +1,73 @@
+---
+title: "Sync Button"
+description: "Set up the Accounting Sync Button so connected customers can initiate syncs directly from the Ramp UI."
+---
+
+<Note>
+  This feature is currently in **Alpha**.
+</Note>
+
+This guide explains how integrators can set up the Accounting Sync Button for API-based accounting connections. Once enabled, connected customers can initiate transaction and reimbursement syncs directly from the Ramp UI.
+
+## Required Scopes
+
+- **Transaction Sync Button**: `transactions:read`, `accounting:read`, `accounting:write`
+- **Reimbursement Sync Button**: `reimbursements:read`, `accounting:read`, `accounting:write`
+
+## How It Works
+
+Both flows use the same pattern:
+
+<Steps>
+  <Step title="Subscribe to a Webhook">
+    Subscribe to `transactions.sync_requested` or `reimbursements.sync_requested`.
+  </Step>
+  <Step title="Enable the Sync Button">
+    Set `transaction_sync_button_enabled` or `reimbursement_sync_button_enabled` on the accounting connection.
+  </Step>
+  <Step title="Receive Webhook on Button Click">
+    When a customer clicks Sync, you receive a webhook with a `sync_request_id`.
+  </Step>
+  <Step title="Fetch Requested Items">
+    Use the `requested_to_sync` filter to fetch only the items that were requested.
+  </Step>
+  <Step title="Post Sync Results">
+    Call `POST /developer/v1/accounting/syncs` with the `sync_request_id` within **5 minutes**.
+  </Step>
+</Steps>
+
+<Warning>
+  **5-minute response window**: You must respond by posting the Accounting Sync within 5 minutes of receiving the webhook. Items that don't have a sync posted within that window will be automatically marked as failed.
+</Warning>
+
+## Enable for New Connections
+
+```json
+POST /developer/v1/accounting/connection
+
+{
+  "remote_provider_name": "Your ERP",
+  "settings": {
+    "transaction_sync_button_enabled": true,
+    "reimbursement_sync_button_enabled": true
+  }
+}
+```
+
+## Enable for Existing Connections
+
+```bash
+# Get connection ID
+GET /developer/v1/accounting/connection
+
+# Update settings
+PATCH /developer/v1/accounting/connection/{connection_id}
+```
+
+```json
+{
+  "settings": {
+    "transaction_sync_button_enabled": true
+  }
+}
+```

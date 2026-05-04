@@ -1,0 +1,181 @@
+{
+  "theme": "mint",
+  "name": "Ramp Developer API",
+  "logo": {
+    "light": "/logo/ramp-light.svg",
+    "dark": "/logo/ramp-dark.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#1A1A1A",
+    "light": "#E8E8E8",
+    "dark": "#1A1A1A",
+    "background": {
+      "light": "#FFFFFF",
+      "dark": "#0A0A0A"
+    }
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Support",
+        "href": "https://support.ramp.com"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://app.ramp.com"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "icon": "play",
+            "pages": [
+              "developer-api/v1/introduction",
+              "developer-api/v1/getting-started",
+              "developer-api/v1/authorization",
+              "developer-api/v1/sandbox"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "icon": "lightbulb",
+            "pages": [
+              "developer-api/v1/monetary-values",
+              "developer-api/v1/pagination",
+              "developer-api/v1/rate-limiting",
+              "developer-api/v1/error-handling",
+              "developer-api/v1/deferred-tasks",
+              "developer-api/v1/debugging",
+              "developer-api/v1/data-relationships"
+            ]
+          },
+          {
+            "group": "Spend Management",
+            "icon": "credit-card",
+            "pages": [
+              "developer-api/v1/cards-and-funds",
+              "developer-api/v1/virtual-cards",
+              "developer-api/v1/virtual-cards-embedded",
+              "developer-api/v1/agent-cards"
+            ]
+          },
+          {
+            "group": "Accounts Payable",
+            "icon": "file-invoice-dollar",
+            "pages": [
+              "developer-api/v1/bill-pay",
+              "developer-api/v1/vendors-merchants-accounting-vendors",
+              "developer-api/v1/vendor-credits"
+            ]
+          },
+          {
+            "group": "Accounting & ERP",
+            "icon": "calculator",
+            "pages": [
+              "developer-api/v1/accounting",
+              "developer-api/v1/accounting-erp-migration",
+              "developer-api/v1/sync-button",
+              "developer-api/v1/tax-codes"
+            ]
+          },
+          {
+            "group": "Platform",
+            "icon": "puzzle-piece",
+            "pages": [
+              "developer-api/v1/webhooks",
+              "developer-api/v1/custom-records",
+              "developer-api/v1/custom-records/customized-approvers",
+              "developer-api/v1/user-lifecycle",
+              "developer-api/v1/applications"
+            ]
+          },
+          {
+            "group": "AI & Tools",
+            "icon": "robot",
+            "pages": [
+              "developer-api/v1/mcp",
+              "developer-api/v1/ramp-mcp",
+              "developer-api/v1/developer-mcp",
+              "developer-api/v1/cli"
+            ]
+          },
+          {
+            "group": "Ramp Data",
+            "icon": "chart-line",
+            "pages": [
+              "developer-api/v1/ramp-data",
+              "developer-api/v1/ramp-data/ramp-rate",
+              "developer-api/v1/ramp-data/ai-index"
+            ]
+          },
+          {
+            "group": "Partner Program",
+            "icon": "handshake",
+            "pages": [
+              "developer-api/v1/build-with-ramp"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": "API Reference",
+            "pages": [
+              "api-reference/overview"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "icon": "list",
+        "pages": [
+          "developer-api/v1/changelog"
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/tryramp",
+      "github": "https://github.com/ramp-public",
+      "linkedin": "https://www.linkedin.com/company/tryramp"
+    },
+    "links": [
+      {
+        "header": "Product",
+        "items": [
+          { "label": "Ramp.com", "href": "https://ramp.com" },
+          { "label": "Integrations", "href": "https://ramp.com/integrations" }
+        ]
+      },
+      {
+        "header": "Developers",
+        "items": [
+          { "label": "API Reference", "href": "/api-reference/overview" },
+          { "label": "Changelog", "href": "/developer-api/v1/changelog" }
+        ]
+      }
+    ]
+  },
+  "seo": {
+    "indexHiddenPages": false
+  },
+  "feedback": {
+    "thumbsRating": true
+  },
+  "search": {
+    "placeholder": "Search documentation..."
+  }
+}

@@ -1,0 +1,44 @@
+---
+title: "Monetary Values"
+description: "How monetary values are represented in the Ramp API using currency codes and amounts."
+---
+
+In the Ramp API, monetary values are represented by the `currency_code` and `amount`. All `currency_code` values are three-letter acronyms as defined in [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) (e.g., `USD` for US Dollars).
+
+## Canonical Representation (Preferred)
+
+Ramp's preferred method uses the `CurrencyAmount` type to group amount and currency_code together. The amount is represented as an **integer in the smallest denomination** to avoid precision loss.
+
+For example:
+- **USD**: $40 is represented as `4000` (since 1 USD = 100 cents)
+- **JPY**: ¥5000 is represented as `5000` (since 1 JPY = 1 yen)
+
+**Formula:** `canonical_amount = display_amount × 10^D`
+
+Where `D` is the number of decimal places for the currency.
+
+| Currency | Example | D |
+|---|---|---|
+| USD | `4000` ($40.00) | 2 |
+| EUR | `10000` (€100.00) | 2 |
+| JPY | `5000` (¥5000) | 0 |
+| GBP | `2500` (£25.00) | 2 |
+
+```json
+{
+  "currency_code": "USD",
+  "amount": 4000
+}
+```
+
+## Legacy Representation
+
+The legacy representation is an older way of representing amounts. Although still supported for backward compatibility, it is **deprecated** and will be replaced in future releases. Migrate to the canonical representation for new development.
+
+## Date and DateTime
+
+Date and DateTime are represented using a string that conforms to **ISO 8601**; UTC is assumed if no timezone offset is specified.
+
+```
+2024-01-15T10:30:00Z
+```

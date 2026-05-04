@@ -1,0 +1,50 @@
+---
+title: "Ramp Rate"
+description: "Public view into software adoption across Ramp's network — explore categories, compare vendors, and add market context."
+---
+
+<Note>
+  Ramp Rate is subject to change. Feedback can be submitted via a [support ticket](https://support.ramp.com).
+</Note>
+
+Ramp Rate gives developers and AI agents a public view into software adoption across Ramp's network. Use it to explore software categories, compare vendors, and add market context to research, prompts, and product experiences.
+
+The REST API is public — **no Ramp account or API key needed**.
+
+## Metric Definitions
+
+| Metric | Description |
+|---|---|
+| **Adoption Rate** | Share of businesses that purchased from a vendor within a category over the past 12 months |
+| **Growth Rate** | Period-over-period delta in a vendor's Adoption Rate |
+| **New Adopter Rate** | Percentage of companies that adopted a vendor for the first time |
+| **Switch Rate** | Percentage of companies that moved from one vendor to another (switcher win rate, not churn) |
+
+## REST API
+
+**Base URL:** `https://api.ramp.com/v1/public/ramp-rate`
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/categories` | List all software categories |
+| GET | `/categories/{category}/summary` | Get adoption stats for a category |
+| GET | `/categories/{category}/vendors` | Get ranked vendor leaderboard |
+| GET | `/vendors/resolve?vendor_name={name}` | Resolve a vendor name to its canonical slug |
+| GET | `/vendors/{vendor_slug}/profile` | Get a vendor's full profile |
+| GET | `/vendors/compare?vendor_slugs={slug1}&vendor_slugs={slug2}` | Compare 2-10 vendors |
+
+### Vendor Leaderboard Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `limit` | integer | 50 | Max vendors to return (1-200) |
+| `fte_segment` | string | none | Filter by company size segment |
+| `min_share_of_spend` | number | — | Filter out vendors below a spend share threshold |
+
+<Tip>
+  `competitor_switch_rate` is a **switcher win rate**, not a retention or churn metric.
+</Tip>
+
+For MCP access, see the [Ramp Data MCP guide](/developer-api/v1/ramp-data).

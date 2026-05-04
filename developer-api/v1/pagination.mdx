@@ -1,0 +1,31 @@
+---
+title: "Pagination"
+description: "How to paginate through large datasets using Ramp's keyset pagination mechanism."
+---
+
+Pagination allows you to retrieve an entire dataset with a series of requests, where each request fetches a portion of the data set. Ramp API uses **keyset pagination** to divide data into fixed-size pages.
+
+## How Keyset Pagination Works
+
+<Steps>
+  <Step title="Request the First Page">
+    Initiate a request for the first page of results. The API response will include a `next` field containing the complete URL for the next page.
+  </Step>
+  <Step title="Follow the Next URL">
+    Use the URL provided in the `next` field to send a subsequent request. The client incorporates the `start` query parameter as a cursor.
+  </Step>
+  <Step title="Repeat Until Complete">
+    Continue requesting subsequent pages using the `next` URL until the API returns a `null` value for the `next` field. This indicates all records have been fetched.
+  </Step>
+</Steps>
+
+```json
+{
+  "data": [...],
+  "page": {
+    "next": "https://api.ramp.com/developer/v1/transactions?start=abc123"
+  }
+}
+```
+
+When `page.next` is `null`, you've reached the end of the dataset.

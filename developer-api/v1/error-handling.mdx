@@ -1,0 +1,60 @@
+---
+title: "Errors"
+description: "How the Ramp API returns error information and best practices for handling errors."
+---
+
+The Ramp API returns detailed error information in the response body along with standard HTTP status codes.
+
+## Error Response Format
+
+```json
+{
+  "error_v2": {
+    "error_code": "VALIDATION_ERROR",
+    "message": "Invalid request format",
+    "additional_info": {
+      "field": "amount",
+      "reason": "Must be a positive integer"
+    }
+  }
+}
+```
+
+## HTTP Status Codes
+
+| Code | Meaning | Description |
+|---|---|---|
+| `400` | Bad Request | Invalid request format |
+| `401` | Unauthorized | Invalid or missing API token |
+| `403` | Forbidden | Insufficient permissions |
+| `404` | Not Found | Resource doesn't exist |
+| `422` | Unprocessable Entity | Validation errors |
+| `429` | Too Many Requests | Rate limit exceeded |
+| `500` | Internal Server Error | Server-side issue |
+| `504` | Gateway Timeout | Request exceeded the 60-second timeout |
+
+## Silent Parameter Handling
+
+<Note>
+  The Ramp API **ignores extra request parameters** or body fields that are not defined in the endpoint specification. This means you won't receive warnings about misspelled field names or deprecated parameters. Validate your requests against the schema documentation during development.
+</Note>
+
+## Best Practices
+
+<Steps>
+  <Step title="Inspect HTTP Status Codes">
+    Use status codes to identify the category of the error (4xx for client errors, 5xx for server errors).
+  </Step>
+  <Step title="Parse the error_v2 Field">
+    Use the `error_code` and `additional_info` to pinpoint the issue and provide actionable feedback.
+  </Step>
+  <Step title="Log Errors with Trace IDs">
+    Log error responses including the `x-trace-id` from the response headers for easier debugging. See [Debugging](/developer-api/v1/debugging).
+  </Step>
+  <Step title="Implement Retry Logic">
+    For transient errors (`429` or `5xx`), implement exponential backoff to retry requests.
+  </Step>
+  <Step title="Provide User Feedback">
+    Use the `message` field to display clear error messages to users when applicable.
+  </Step>
+</Steps>

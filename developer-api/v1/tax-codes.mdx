@@ -1,0 +1,82 @@
+---
+title: "Tax Codes"
+description: "Associate tax rates with transactions in Ramp to keep your ERP and Ramp in sync on tax classification."
+---
+
+<Note>
+  Tax code endpoints are currently in **Beta**. Endpoints may be subject to breaking changes, which will be announced via the [Changelog](/developer-api/v1/changelog).
+</Note>
+
+Tax codes allow you to associate tax rates with transactions in Ramp, keeping your ERP and Ramp in sync on tax classification.
+
+## Prerequisites
+
+- An active accounting connection
+- GL accounts uploaded (required for associating tax rates with GL accounts)
+- `accounting:read` and `accounting:write` scopes
+
+## Setup Steps
+
+Setting up tax codes involves three steps, performed in this order:
+
+<Steps>
+  <Step title="Upload Tax Rates">
+    Tax rates define individual rate values (e.g., GST at 5%, PST at 7%).
+
+    ```bash
+    POST /developer/v1/accounting/tax/rates
+    ```
+
+    | Field | Description |
+    |---|---|
+    | `id` | Your ERP's external identifier |
+    | `name` | Display name of the tax rate |
+    | `rate` | Decimal value (e.g., `"0.05"` for 5%) |
+    | `accounting_gl_account_id` | The `ramp_id` of the associated GL account |
+
+    You can upload up to **500 tax rates** per request (all-or-nothing processing).
+  </Step>
+  <Step title="Create the Tax Code Field">
+    Create the accounting field that holds your tax code options. Only one active tax code field per connection.
+
+    ```bash
+    POST /developer/v1/accounting/tax/code
+    ```
+
+    ```json
+    {
+      "name": "Tax Code",
+      "display_name": "Tax Code"
+    }
+    ```
+
+    <Note>
+      You only need to create the tax code field **once**. If it already exists, skip to Step 3.
+    </Note>
+  </Step>
+  <Step title="Upload Tax Code Options">
+    Tax code options are the selectable values within your tax code field.
+
+    ```bash
+    POST /developer/v1/accounting/tax/code/options
+    ```
+
+    ```json
+    {
+      "options": [
+        {
+          "id": "TAX-001",
+          "name": "Standard GST (5%)",
+          "tax_rate_ids": ["rate-gst-5"]
+        }
+      ]
+    }
+    ```
+
+    You can upload up to **500 options** per request.
+  </Step>
+</Steps>
+
+## Reading Tax Codes on Transactions
+
+After a user selects a tax code, it appears in the `accounting_field_selections` array for line items. The tax code selection has `"type": "TAX_CODE"` in both the field entry and its `category_info`, making it easy to identify programmatically.

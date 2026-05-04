@@ -1,0 +1,48 @@
+---
+title: "AI Index"
+description: "Measure AI adoption rates among American businesses using Ramp transaction data."
+---
+
+<Note>
+  AI Index is subject to change. Feedback can be submitted via a [support ticket](https://support.ramp.com).
+</Note>
+
+AI Index measures the adoption rate of artificial intelligence products and services among American businesses. The sample includes more than 50,000 American businesses and billions of dollars in corporate spend using data from Ramp's corporate card and bill pay platform.
+
+## Metric Definitions
+
+| Metric | Description |
+|---|---|
+| **AI adoption share** | Percentage of businesses with a positive transaction amount for an AI product in a given month |
+| **Industry sector** | NAICS-based grouping for comparing AI adoption across the economy |
+| **Company size segment** | Size bucket for comparing AI adoption across businesses of different scales |
+
+<Note>
+  Because AI Index is based on observed paid transactions, it likely undercounts total AI adoption when businesses use free tools or employees use personal accounts.
+</Note>
+
+## REST API
+
+**Base URL:** `https://api.ramp.com/v1/public/ai-index`
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/adoption` | Overall AI adoption metrics and vendor breakdowns |
+| GET | `/adoption/sectors` | AI adoption rates by industry sector |
+| GET | `/adoption/sizes` | AI adoption rates by company size segment |
+
+### Parameters
+
+All endpoints support an optional `months` query parameter:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `months` | integer | 1 | Number of months of history (up to 120). `1` returns the latest available month. |
+
+### Response Format
+
+All endpoints return a `{"data": [...]}` wrapper containing zero or more monthly records. If no data is available, the API returns `{"data": []}` with HTTP 200.
+
+For MCP access, see the [Ramp Data MCP guide](/developer-api/v1/ramp-data).

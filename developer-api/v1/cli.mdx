@@ -1,0 +1,112 @@
+---
+title: "Ramp CLI"
+description: "Authenticate with OAuth, manage expenses, approve bills, book travel, and more from your terminal or AI agent."
+---
+
+The Ramp CLI lets you authenticate with OAuth, manage expenses, approve bills, book travel, and more from your terminal or AI agent.
+
+<Tip>
+  The CLI is open source. [View the repo on GitHub](https://github.com/ramp-public/ramp-cli).
+</Tip>
+
+## Installation
+
+```bash
+curl -fsSL https://cli.ramp.com/install.sh | sh
+```
+
+Or if you have `uv` installed:
+
+```bash
+uvx ramp-cli
+```
+
+## Authentication
+
+```bash
+ramp auth login
+```
+
+This opens a browser-based OAuth flow. By default, the CLI connects to the **Sandbox** environment.
+
+```bash
+# Switch environments
+ramp config set env production
+
+# Or use the --env flag
+ramp transactions list --env production
+```
+
+## Permissions
+
+Every CLI action runs as the authenticated user:
+
+- **Actions are attributed to you** — approving a bill shows your name in Ramp
+- **Permissions match your Ramp role** — if you can't see it in the dashboard, you can't see it in the CLI
+- **Data visibility follows your access** — non-admins see only their own data
+
+```bash
+# Confirm which user the CLI is acting as
+ramp users me
+```
+
+## Output Modes
+
+| Flag | Description |
+|---|---|
+| `--human` | Human-readable table output (default in terminal) |
+| `--agent` | Machine-readable JSON output (default when piped) |
+| `--wide` | Show all columns in table output |
+
+## Commands
+
+### Setup & Configuration
+
+| Command | Description |
+|---|---|
+| `auth` | Login, logout, check status |
+| `config` | Get/set CLI configuration |
+| `env` | Show or set default environment |
+| `skills` | Browse and install agent skill instructions |
+| `feedback` | Submit feedback about the CLI |
+
+### Resources (11 total)
+
+Each resource has its own set of tools. Usage: `ramp <resource> <tool> [OPTIONS]`
+
+| Resource | Tools |
+|---|---|
+| `accounting` | categories, category-options |
+| `bills` | search, get, draft, pending, approve, attachments |
+| `funds` | list, activate, creds, lock |
+| `general` | comment, explain, help-center, policy |
+| `purchase_orders` | search, get |
+| `receipts` | upload, attach |
+| `reimbursements` | list, pending, submit, approve, edit |
+| `requests` | pending, approve |
+| `transactions` | list, get, approve, edit, missing, flag-missing, explain-missing, memo-suggestions, trips |
+| `travel` | list, create, bookings, locations |
+| `users` | me, search, org-chart |
+
+<Tip>
+  Run `ramp <resource> <tool> --help` to see all available flags for any tool.
+</Tip>
+
+## Global Flags
+
+| Flag | Description |
+|---|---|
+| `--env, -e` | `sandbox` (default) or `production` |
+| `--output, -o` | Output format: `json` or `table` |
+| `--quiet, -q` | Suppress progress output |
+| `--no-input` | Disable interactive prompts (for CI/scripts) |
+
+## AI Agent Integration
+
+The CLI includes a skill system for AI agent frameworks. Skills are structured instructions that teach an agent how to use Ramp for specific workflows.
+
+For non-interactive environments:
+
+```bash
+ramp transactions list --no-input --quiet --output json
+```

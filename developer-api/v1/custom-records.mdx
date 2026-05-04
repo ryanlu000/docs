@@ -1,0 +1,121 @@
+---
+title: "Custom Records"
+description: "Extend Ramp's data models with your own custom fields and data structures."
+---
+
+<Note>
+  Custom Records are available to **Ramp Plus** and **Ramp Enterprise** customers only.
+</Note>
+
+The Custom Records API allows you to extend Ramp's data models with your own custom fields and data. Whether you need to add custom fields to existing Ramp objects or create entirely new data structures, this API provides the flexibility to integrate Ramp with your business processes.
+
+## Capabilities
+
+- **Extend Native Objects**: Add custom fields to Users, Locations, Departments, and Accounting Field Options
+- **Create Custom Tables**: Build your own data structures for business-specific information
+- **Link Data**: Create relationships between custom and native data
+- **Query and Filter**: Search and retrieve data using flexible filtering
+
+## Native Tables vs Custom Tables
+
+| Type | Description | Row Identification |
+|---|---|---|
+| **Native Tables** | Extend core Ramp objects with custom fields | Ramp IDs |
+| **Custom Tables** | Store arbitrary business data | External keys |
+
+## Creating Tables
+
+### Extend a Native Table
+
+```bash
+POST /developer/v1/custom-records/configure/native-tables
+```
+
+```json
+{
+  "table_name": "users"
+}
+```
+
+### Create a Custom Table
+
+```bash
+POST /developer/v1/custom-records/configure/custom-tables
+```
+
+```json
+{
+  "name": "regions",
+  "label": "Regions"
+}
+```
+
+<Tip>
+  Table names must be lowercase, alpha-only slugs. Underscores are permitted but not at the beginning or end.
+</Tip>
+
+## Creating Columns
+
+### Reference Columns
+
+Reference columns create relationships between tables. The API automatically creates a corresponding column on the referenced table for bidirectional relationships.
+
+```json
+{
+  "name": "home_state",
+  "label": "Home State",
+  "type": "custom_reference",
+  "custom_reference": {
+    "table_name": "states",
+    "corresponding_column_name": "residents",
+    "corresponding_column_label": "Residents",
+    "cardinality": "many_to_one"
+  }
+}
+```
+
+### Primitive Columns
+
+Store simple data types like text or boolean values:
+
+```json
+{
+  "name": "state_name",
+  "label": "State Name",
+  "type": "text"
+}
+```
+
+## Working with Data
+
+### Write to Custom Tables
+
+```bash
+PUT /developer/v1/custom-records/custom-tables/{table_name}/rows
+```
+
+### Write to Native Tables
+
+```bash
+PUT /developer/v1/custom-records/native-tables/{table_name}/rows
+```
+
+### Pagination and Filtering
+
+Both custom and native tables support:
+- Page size control (default: 50, max: 100)
+- Cursor-based pagination using the `start` parameter
+- Column-specific filters using `filter.column_name.operation`
+
+## Supported Native Tables
+
+| Table | Identifier Options |
+|---|---|
+| Users | `id` (UUID), `email` |
+| Locations | `id` (UUID), `name` |
+| Departments | `id` (UUID), `name` |
+| Accounting Field Options | `id` (UUID), `field_id::option_id` |
+| Entities | `id` (UUID), `name` |
+| Bills | `id` (UUID) |
+| Transactions | `id` (UUID) |
+| Reimbursements | `id` (UUID) |

@@ -1,0 +1,56 @@
+---
+title: "Deferred Tasks"
+description: "How to handle asynchronous API operations that require polling for completion status."
+---
+
+Some API calls, such as requesting a new card, require asynchronous processing. They are all denoted with `/deferred/` in the request URL.
+
+## How It Works
+
+For deferred tasks, the API returns immediately with a **task ID**. Use this ID to poll the status endpoint until the task completes.
+
+<Steps>
+  <Step title="Initiate the Task">
+    Make the initial request. The API returns a task ID.
+
+    ```json
+    {
+      "id": "eca553b8-6923-42b2-aea9-8f3c15b079ff"
+    }
+    ```
+  </Step>
+  <Step title="Poll for Status">
+    Call the deferred status endpoint periodically:
+
+    ```bash
+    GET /developer/v1/card/deferred/status/eca553b8-6923-42b2-aea9-8f3c15b079ff
+    ```
+  </Step>
+  <Step title="Handle the Result">
+    Once the status becomes `SUCCESS` or `ERROR`, the task is complete.
+  </Step>
+</Steps>
+
+## Status Response
+
+The status endpoint returns:
+
+- **status**: One of `STARTED`, `IN_PROGRESS`, `ERROR`, `SUCCESS`
+- **data**: Additional details. On `SUCCESS`, includes the new object ID. On `ERROR`, includes error information.
+- **context**: Static information about the initial request such as `acting_user_id`
+
+```json
+{
+  "status": "SUCCESS",
+  "data": {
+    "id": "new-card-uuid-here"
+  },
+  "context": {
+    "acting_user_id": "user-uuid"
+  }
+}
+```
+
+<Tip>
+  Poll the status endpoint every 1–2 seconds. Most tasks finish in under 5 seconds.
+</Tip>

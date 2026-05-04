@@ -1,0 +1,104 @@
+---
+title: "Customized Approvers"
+description: "Use Matrix Tables to map accounting dimensions to specific approvers for automated spend routing."
+---
+
+Matrix Tables let you define lookup relationships between Ramp objects. A common use case: mapping accounting dimensions (like projects, departments, or cost centers) to specific approvers so that spend is automatically routed to the right person.
+
+## Example
+
+| Project | Approver |
+|---|---|
+| Marketing Events | Robert Gu |
+| Services | Elizabeth Smith |
+
+## Prerequisites
+
+- A Ramp Plus or Enterprise account
+- An OAuth client with `custom_records:read`, `custom_records:write`, `accounting:read`, and `users:read` scopes
+- At least one accounting field with options configured
+
+## Setup
+
+<Steps>
+  <Step title="Authenticate">
+    Obtain an access token using client credentials.
+  </Step>
+  <Step title="Find Your Accounting Field">
+    List your accounting fields to find the `ramp_id` of the field whose options you want to map:
+
+    ```bash
+    GET /developer/v1/accounting/fields
+    ```
+  </Step>
+  <Step title="Create the Matrix Table">
+    ```bash
+    POST /developer/v1/custom-records/configure/matrix-tables
+    ```
+
+    ```json
+    {
+      "name": "project_approver",
+      "label": "Project Approver",
+      "input_columns": [{
+        "name": "project",
+        "label": "Project",
+        "type": "accounting_field_options",
+        "accounting_field_ramp_id": "FIELD_RAMP_ID"
+      }],
+      "result_columns": [{
+        "name": "approver",
+        "label": "Approver",
+        "type": "native_reference",
+        "native_reference": { "table_name": "users" },
+        "cardinality": "many_to_many"
+      }]
+    }
+    ```
+
+    <Note>
+      When referencing `accounting_field_options` as an input column, you **must** include `accounting_field_ramp_id`.
+    </Note>
+  </Step>
+  <Step title="Populate Rows">
+    ```bash
+    PUT /developer/v1/custom-records/matrix-tables/project_approver/rows
+    ```
+
+    ```json
+    {
+      "rows": [{
+        "input_cells": [{
+          "column_name": "project",
+          "contents": { "column_name": "name", "value": "Marketing Events" }
+        }],
+        "result_cells": [{
+          "column_name": "approver",
+          "contents": { "column_name": "email", "value": "robert.gu@company.com" }
+        }]
+      }]
+    }
+    ```
+  </Step>
+</Steps>
+
+## Referencing Objects
+
+When referencing users in results, you can identify them by:
+
+| Method | Example |
+|---|---|
+| Ramp UUID | `{"column_name": "id", "value": "23b24cd9-..."}` |
+| Email | `{"column_name": "email", "value": "robert.gu@company.com"}` |
+
+For accounting field option inputs:
+
+| Method | Example |
+|---|---|
+| Option `ramp_id` | `{"column_name": "id", "value": "08318be9-..."}` |
+| ERP code | `{"column_name": "code", "value": "MKT_EVENTS"}` |
+| ERP name | `{"column_name": "name", "value": "Marketing Events"}` |
+
+<Tip>
+  `code` and `name` are often easier because they let you skip the extra field-options lookup, but they only work when the value is unique within the selected accounting field.
+</Tip>

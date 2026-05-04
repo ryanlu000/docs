@@ -1,0 +1,109 @@
+---
+title: "Virtual Cards"
+description: "Create and manage virtual cards with customizable spend and fraud controls for payments in your apps, agents, or backend workflows."
+---
+
+<Warning>
+  Due to PCI compliance requirements, 16-digit card numbers and CVVs are not available in production without approval. All customers will see these fields in Sandbox. [Submit a support ticket](https://support.ramp.com) to begin the qualification process.
+</Warning>
+
+Create and manage virtual cards with customizable spend and fraud controls, so you can safely embed payments into your apps, agents, or backend workflows.
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Travel Platforms" icon="plane">
+    Generate single-use virtual cards for each booking to streamline reconciliation
+  </Card>
+  <Card title="B2B Marketplaces" icon="store">
+    Provide instant supplier payments via virtual cards while earning interchange
+  </Card>
+  <Card title="Procurement & AP" icon="file-invoice">
+    Replace ACH payments with card for better tracking and cashback
+  </Card>
+  <Card title="AI Agents" icon="robot">
+    Enable AI agents to make autonomous payments with controlled spending limits
+  </Card>
+</CardGroup>
+
+## How It Works
+
+A virtual card is generated instantly via Ramp's API, optionally configured with:
+
+- **Merchant restrictions** — limiting transactions to specific providers
+- **Spending caps** — ensuring charges do not exceed predefined thresholds
+- **Expiration dates** — to auto-expire unused cards for security
+
+The generated card details (PAN, CVV, expiration) are securely delivered via Ramp's Vault API.
+
+## Quick Start
+
+You must have the `cards:read_vault` and `limits:write` scopes enabled.
+
+### 1. Set Up Your Client
+
+```python
+import os
+import base64
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CLIENT_ID = os.getenv("RAMP_CLIENT_ID")
+CLIENT_SECRET = os.getenv("RAMP_CLIENT_SECRET")
+BASE_URL = "https://demo-api.ramp.com"
+
+# Get access token
+credentials = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+token_response = requests.post(
+    f"{BASE_URL}/developer/v1/token",
+    headers={"Authorization": f"Basic {credentials}"},
+    data={"grant_type": "client_credentials", "scope": "cards:read_vault limits:write"}
+)
+TOKEN = token_response.json()["access_token"]
+```
+
+### 2. Create a Virtual Card
+
+```python
+response = requests.post(
+    f"{BASE_URL}/developer/v1/vault/cards",
+    headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"},
+    json={
+        "display_name": "Vendor Payment - Acme Corp",
+        "user_id": "USER_UUID",
+        "spending_restrictions": {
+            "amount": 50000,
+            "currency": "USD"
+        },
+        "idempotency_key": "unique-key-456"
+    }
+)
+card = response.json()
+print(f"Card Number: {card['card_number']}")
+print(f"CVV: {card['cvv']}")
+```
+
+## Terminating Virtual Cards
+
+<Warning>
+  When terminating virtual cards created via the Vault API, use the **limits termination endpoint**, not the cards termination endpoint.
+
+  ✅ `POST /developer/v1/limits/{spend_limit_id}/deferred/termination`
+
+  ❌ `POST /developer/v1/cards/{card_id}/deferred/termination`
+</Warning>
+
+Termination is irreversible and processed asynchronously. Check the task status using the [deferred tasks](/developer-api/v1/deferred-tasks) endpoint.
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Can refunds be applied after a card is locked?">
+    Yes, refunds can be applied even after the card is locked, ensuring reconciliation remains seamless.
+  </Accordion>
+  <Accordion title="How do I detect refunds on a virtual card?">
+    Subscribe to the `transactions.cleared` webhook event. When the webhook fires, fetch the transaction details — a negative amount indicates a refund or reversal.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,118 @@
+---
+title: "Cards and Funds"
+description: "Programmatic control over funds, cards, and spending policies to help your teams spend responsibly and track budgets in real time."
+---
+
+Ramp's Developer API gives you programmatic control over funds, cards, and spending policies. Whether you're managing departmental budgets, team events, or office expenses, these APIs provide the building blocks for automated spend management.
+
+## How Funds, Cards, and Spend Programs Work Together
+
+<CardGroup cols={3}>
+  <Card title="Funds (Limits)" icon="wallet">
+    Predefined budgets assigned to employees, teams, or initiatives. Can include merchant and category restrictions, as well as expiration controls.
+  </Card>
+  <Card title="Cards" icon="credit-card">
+    Payment methods users spend funds with. Virtual cards for online transactions, physical cards for in-person spending.
+  </Card>
+  <Card title="Spend Programs" icon="layer-group">
+    Reusable templates that group funds, users, and cards under shared policies. Think of them as "blueprints" for consistent fund creation.
+  </Card>
+</CardGroup>
+
+## Required Scopes
+
+| API | Scopes |
+|---|---|
+| Limits | `limits:read`, `limits:write` |
+| Spend Programs | `spend_programs:read`, `spend_programs:write` |
+| Cards | `cards:read`, `cards:write` |
+| Transactions | `transactions:read` |
+
+<Note>
+  **Card Data Access**: Standard API responses return masked card numbers. Full 16-digit card numbers and CVVs require additional security review and PCI API access. [Submit a support ticket](https://support.ramp.com) if your platform needs full card data.
+</Note>
+
+## Walkthrough: Managing a Team Offsite
+
+### 1. Create a Spend Program Template
+
+```bash
+curl -X POST https://api.ramp.com/developer/v1/spend-programs \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "display_name": "Team Offsites",
+    "description": "Template for quarterly team offsites",
+    "permitted_spend_types": {
+      "categories": [19, 6, 4]
+    }
+  }'
+```
+
+This creates a template that allows spending on meals (category 19), lodging (category 6), and airlines (category 4).
+
+### 2. Create a Fund from the Template
+
+```bash
+curl -X POST https://api.ramp.com/developer/v1/limits \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "display_name": "Q1 Engineering Offsite",
+    "spend_program_id": "$SPEND_PROGRAM_ID",
+    "user_id": "$USER_ID",
+    "idempotency_key": "unique-key-123"
+  }'
+```
+
+### 3. Add Team Members
+
+```bash
+curl -X POST https://api.ramp.com/developer/v1/limits/$LIMIT_ID/add-users \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_ids": ["$USER_ID_2", "$USER_ID_3"]
+  }'
+```
+
+### 4. Monitor Spending
+
+```bash
+curl -X GET "https://api.ramp.com/developer/v1/transactions?spend_limit_id=$LIMIT_ID" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Spend Programs">
+    - Create spend programs for recurring spending patterns (travel, SaaS, office supplies)
+    - Use descriptive names and appropriate icons for easy identification
+    - Set up automatic provisioning rules for standardized employee benefits
+  </Accordion>
+  <Accordion title="Funds">
+    - Use descriptive display names that indicate purpose
+    - Set appropriate spending categories to prevent misuse
+    - Create separate funds for each subscription or vendor
+  </Accordion>
+  <Accordion title="Cards">
+    - Issue physical cards for employees who need in-person spending
+    - Physical cards can draw from multiple funds through auto-matching
+    - Consider shipping time when planning physical card rollouts
+  </Accordion>
+</AccordionGroup>
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Can a limit exist without a card?">
+    Yes — you can create funds (limits) without any associated cards. These funds can be used for reimbursements only.
+  </Accordion>
+  <Accordion title="What happens when I suspend a limit vs. a card?">
+    **Suspending a Limit** prevents new spending from the limit but does NOT automatically suspend associated cards. **Suspending a Card** prevents ALL spending on that specific card but does NOT affect the associated limits.
+  </Accordion>
+  <Accordion title="When should I use spend programs vs. creating funds directly?">
+    Use spend programs for recurring events with consistent policies. Create funds directly for one-off events with unique requirements.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,45 @@
+---
+title: "Debugging"
+description: "Use x-trace-id headers and support tickets to debug API issues efficiently."
+---
+
+Ramp APIs return an `x-trace-id` header in all API responses. This trace ID is particularly helpful for debugging, as it enables correlation between logs, metrics, and the API response.
+
+## Using Trace IDs
+
+Every API response includes the trace ID in the headers:
+
+```
+x-trace-id: abc123def456
+```
+
+<Tip>
+  Include the `x-trace-id` when reaching out to Ramp support for quicker issue resolution.
+</Tip>
+
+**Best practices:**
+- Log the `x-trace-id` in your application for easy reference
+- Use it to track specific requests across different systems
+- Always include it when contacting support
+
+## How to Submit a Developer API Support Ticket
+
+<Steps>
+  <Step title="Navigate to Company > Developer">
+    In the left-hand navigation, click **Company** to expand the menu, then select **Developer**.
+  </Step>
+  <Step title="Open Developer API Support">
+    On the Developer page, click the **Developer API Support** card.
+  </Step>
+  <Step title="Select Connect to Developer Support team">
+    In the chat window, select **Connect to Developer Support team**.
+  </Step>
+  <Step title="Answer the Agent's Questions">
+    The AI assistant will ask you a few questions about your issue. Answer as completely as you can, then review the pre-filled support ticket form.
+  </Step>
+  <Step title="Submit Ticket">
+    Click **Submit Ticket** to send your request to the team.
+  </Step>
+</Steps>
+
+Our Developer Support team will follow up with you over email.

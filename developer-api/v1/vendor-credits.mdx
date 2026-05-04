@@ -1,0 +1,86 @@
+---
+title: "Vendor Credits"
+description: "Enable and use vendor credits with the Ramp API for accounting integrations."
+---
+
+<Note>
+  This feature is currently in **Beta**.
+</Note>
+
+This guide explains how integrators can enable and use vendor credits with the Ramp API.
+
+## Requirements
+
+Your app must have scopes `accounting:read`, `accounting:write`, and `vendors:read`.
+
+## Enable Vendor Credits
+
+<Note>
+  This setting is managed at the **Accounting Connection level**. If you plan on creating multiple Accounting Connections, you need to configure this setting for each connection.
+</Note>
+
+### For New Connections
+
+Make a `POST` call to `/developer/v1/accounting/connection` with `settings.vendor_credits_enabled` set to `true`:
+
+```json
+{
+  "remote_provider_name": "Your ERP",
+  "settings": {
+    "vendor_credits_enabled": true
+  }
+}
+```
+
+### For Existing Connections
+
+First, retrieve your connection ID:
+
+```bash
+GET /developer/v1/accounting/connection
+```
+
+Then update the connection:
+
+```bash
+PATCH /developer/v1/accounting/connection/{connection_id}
+```
+
+```json
+{
+  "settings": {
+    "vendor_credits_enabled": true
+  }
+}
+```
+
+## List Vendor Credits
+
+### All Credits
+
+```bash
+GET /developer/v1/vendors/credits
+```
+
+### Credits for a Specific Vendor
+
+```bash
+GET /developer/v1/vendors/{vendor_id}/credits
+```
+
+### A Specific Credit
+
+```bash
+GET /developer/v1/vendors/credits/{credit_id}
+```
+
+## Creating Vendor Credits
+
+Once vendor credits are enabled, users can create them in the Ramp platform:
+
+<Steps>
+  <Step title="Navigate to Vendors" />
+  <Step title="Click into a specific vendor" />
+  <Step title="Click New in the right-hand corner" />
+  <Step title="Select Vendor Credit and fill in the required fields" />
+</Steps>

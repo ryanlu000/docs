@@ -1,0 +1,52 @@
+---
+title: "Embedded Cards"
+description: "Securely display card numbers and CVV codes to users via an iframe without card data touching your servers."
+---
+
+<Note>
+  **Beta Feature**: Embedded Cards is currently in beta. Please reach out via a [support ticket](https://support.ramp.com) to request a allowlist for your `parent_origin`.
+</Note>
+
+Ramp Embedded Cards allow you to securely display card numbers and CVV codes to users via an iframe. Card data flows directly from Ramp to your user's browser without touching your servers.
+
+## Integration Flow
+
+<Steps>
+  <Step title="Create a Limit">
+    Create a limit using `POST /limits`. A card will be automatically created with a unique `card_id`.
+  </Step>
+  <Step title="Generate Embed Token (Backend)">
+    Your backend calls `/developer/v1/embedded/cards/{card_id}/embed` to generate a secure embed token.
+
+    ```json
+    {
+      "parent_origin": "https://your-app-domain.com"
+    }
+    ```
+  </Step>
+  <Step title="Load iframe (Frontend)">
+    Your frontend receives the token and loads it in an iframe pointing to Ramp's embed service.
+  </Step>
+  <Step title="User Views Card">
+    The user's browser requests card details directly from Ramp — card data never touches your servers.
+  </Step>
+</Steps>
+
+## Prerequisites
+
+- A fund created with a `card_id` (see [Cards and Funds](/developer-api/v1/cards-and-funds))
+- The `embedded_cards:write` scope enabled on your application
+- A allowlisted `parent_origin` domain
+
+## The parent_origin Parameter
+
+The `parent_origin` is the domain where your application is hosted. This must exactly match the `window.location.origin` of the page where you'll embed the iframe.
+
+| Environment | Example |
+|---|---|
+| Production | `https://your-app-domain.com` |
+| Local development | `http://localhost:3000` |
+
+<Warning>
+  The origin must match exactly — including protocol (`https://` vs `http://`) and port number. Mismatched origins will result in the embed failing to load.
+</Warning>
